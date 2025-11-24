@@ -178,6 +178,6 @@ careernexus/
 
 ##  Team
 **Team ISE_37**
-*   Developed for Hackathon Challenge: AI-Enhanced Career Guidance.
+*   Developed for Capstone Project: AI-Enhanced Career Guidance.
 
 ---
