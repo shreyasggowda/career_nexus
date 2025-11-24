@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CareerNexus AI</title>
+    <!-- Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        /* --- VARIABLES & THEME (MONOCHROME GLASS) --- */
+        :root {
+            --text-main: #ffffff;
+            --text-muted: #a1a1aa;
+            --glass-bg: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --glass-hover: rgba(255, 255, 255, 0.08);
+            --accent-glow: rgba(255, 255, 255, 0.2);
+            --btn-bg: #ffffff;
+            --btn-text: #000000;
+        }
+
+        * { box-sizing: border-box; transition: all 0.3s ease; }
+        
+        body {
+            font-family: 'Inter', 'Segoe UI', sans-serif;
+            color: var(--text-main);
+            margin: 0;
+            height: 100vh;
+            overflow: hidden;
+            /* Animated Black/Grey Gradient Background */
+            background: linear-gradient(-45deg, #000000, #1c1c1c, #2b2b2b, #000000);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* --- UTILITIES --- */
+        .hidden { display: none !important; }
+        .flex { display: flex; }
+        .w-full { width: 100%; }
+        
+        /* Glass Effect Class */
+        .glass-panel {
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Buttons */
+        .btn {
+            background: var(--btn-bg);
+            color: var(--btn-text);
+            padding: 12px 24px;
+            border: none;
+            border-radius: 30px; /* Pill shape */
+            cursor: pointer;
+            font-weight: 700;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+            letter-spacing: 0.5px;
+        }
+        .btn:hover { 
+            transform: translateY(-2px);
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.4);
+        }
+
+        /* Inputs */
+        input, select, textarea {
+            width: 100%;
+            padding: 14px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--glass-border);
+            border-radius: 10px;
+            color: white;
+            margin-bottom: 15px;
+            outline: none;
+            font-size: 14px;
+        }
+        input:focus, textarea:focus, select:focus { 
+            border-color: rgba(255, 255, 255, 0.5); 
+            background: rgba(0, 0, 0, 0.6);
+        }
+
+        /* --- AUTH SCREEN --- */
+        #auth-screen {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .auth-box {
+            padding: 50px;
+            border-radius: 24px;
+            width: 420px;
+            text-align: center;
+        }
+
+        /* --- MAIN LAYOUT --- */
+        #app-container { display: flex; height: 100vh; }
+        
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            border-right: 1px solid var(--glass-border);
+            padding: 30px 20px;
+            display: flex;
+            flex-direction: column;
+            background: rgba(0,0,0,0.2); /* Slightly darker than main */
+            backdrop-filter: blur(20px);
+        }
+        .brand { 
+            font-size: 26px; 
+            font-weight: bold; 
+            color: white; 
+            margin-bottom: 50px; 
+            display: flex; align-items: center; gap: 12px; 
+            text-shadow: 0 0 10px rgba(255,255,255,0.3);
+        }
+        .nav-item {
+            padding: 16px;
+            color: var(--text-muted);
+            cursor: pointer;
+            border-radius: 12px;
+            margin-bottom: 8px;
+            display: flex; align-items: center; gap: 15px;
+            font-weight: 500;
+            border: 1px solid transparent;
+        }
+        .nav-item:hover { 
+            background: var(--glass-hover); 
+            color: white;
+        }
+        .nav-item.active { 
+            background: rgba(255, 255, 255, 0.1); 
+            color: white; 
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 0 15px rgba(255,255,255,0.05);
+        }
+        
+        /* Content Area */
+        .main-content { flex: 1; padding: 40px; overflow-y: auto; position: relative;}
+        
+        /* --- CARDS --- */
+        .card {
+            padding: 30px;
+            border-radius: 20px;
+            margin-bottom: 25px;
+        }
+
+        h1 { font-size: 2.5rem; margin-bottom: 10px; font-weight: 300; letter-spacing: -1px; }
+        h3 { font-weight: 400; color: var(--text-muted); margin-bottom: 20px;}
+
+        /* --- ONBOARDING --- */
+        .step-indicator { display: flex; justify-content: space-between; margin-bottom: 20px; }
+        
+        /* --- CHAT UI (ENHANCED) --- */
+        .chat-container {
+            display: flex;
+            flex-direction: column;
+            height: 85vh;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .chat-box { 
+            flex-grow: 1;
+            overflow-y: auto; 
+            padding: 20px; 
+            border-radius: 20px; 
+            margin-bottom: 20px; 
+            /* Inner shadow for depth */
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
+            background: rgba(0,0,0,0.2);
+        }
+
+        /* Scrollbar Styling */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.4); }
+
+        .msg { 
+            margin-bottom: 20px; 
+            padding: 15px 20px; 
+            border-radius: 18px; 
+            line-height: 1.6; 
+            max-width: 80%;
+            position: relative;
+            animation: fadeIn 0.3s ease-out;
+        }
+        
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* User Message: White Bubble */
+        .msg.user { 
+            background: white; 
+            color: black; 
+            margin-left: auto; 
+            border-bottom-right-radius: 4px;
+            box-shadow: 0 5px 15px rgba(255,255,255,0.1);
+        }
+
+        /* AI Message: Glass Bubble */
+        .msg.ai { 
+            background: rgba(255, 255, 255, 0.05); 
+            color: white; 
+            border: 1px solid rgba(255,255,255,0.1);
+            margin-right: auto; 
+            border-bottom-left-radius: 4px;
+            backdrop-filter: blur(10px);
+        }
+
+        .input-area {
+            display: flex;
+            gap: 15px;
+            background: var(--glass-bg);
+            padding: 10px;
+            border-radius: 50px; /* Capsule shape */
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(20px);
+        }
+
+        .input-area input {
+            margin: 0;
+            background: transparent;
+            border: none;
+            padding: 15px 20px;
+            font-size: 16px;
+        }
+        .input-area input:focus { background: transparent; border: none; }
+        
+        .send-btn {
+            background: white;
+            color: black;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            transition: 0.3s;
+        }
+        .send-btn:hover { transform: scale(1.1); box-shadow: 0 0 15px rgba(255,255,255,0.5); }
+        
+        /* --- DASHBOARD AI RESULT STYLING --- */
+        .ai-output h2 { 
+            background: linear-gradient(90deg, #fff, #999);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 1.8rem; 
+            border-bottom: 1px solid rgba(255,255,255,0.1); 
+            padding-bottom: 15px; 
+            margin-top: 30px;
+        }
+        .ai-output ul { padding-left: 20px; }
+        .ai-output li { margin-bottom: 12px; color: #d4d4d8; }
+        .ai-output strong { color: white; font-weight: 700; }
+
+
+        .glass-response {
+    background: rgba(255, 255, 255, 0.04) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    backdrop-filter: blur(12px);
+    padding: 20px !important;
+    display: flex;
+    gap: 15px;
+    align-items: flex-start;
+    border-radius: 20px;
+}
+
+.ai-icon {
+    background: rgba(255, 255, 255, 0.1);
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.ai-icon i {
+    color: white;
+    font-size: 18px;
+}
+
+.ai-text h2, 
+.ai-text h3 {
+    margin-bottom: 8px;
+    margin-top: 10px;
+    font-weight: 600;
+    color: white;
+}
+
+.ai-text ul {
+    margin-left: 20px;
+    margin-top: 5px;
+    margin-bottom: 10px;
+}
+
+.ai-text li {
+    margin-bottom: 6px;
+    color: #e5e5e5;
+}
+
+
+        /* Loader */
+        .loader { border: 3px solid rgba(255,255,255,0.1); border-top: 3px solid white; border-radius: 50%; width: 20px; height: 20px; animation: spin 1s linear infinite; display: inline-block;}
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+
+    <!-- LOGIN / REGISTER -->
+    <div id="auth-screen">
+        <div class="auth-box glass-panel">
+            <div style="text-align: center; margin-bottom: 30px;">
+                <i class="fa-solid fa-atom fa-3x" style="color: white; filter: drop-shadow(0 0 10px white);"></i>
+                <h2 style="font-weight: 300; letter-spacing: 2px; margin-top: 10px;">CAREER<span style="font-weight: 800">NEXUS</span></h2>
+            </div>
+            <input type="text" id="username" placeholder="Username">
+            <input type="password" id="password" placeholder="Password">
+            <button class="btn w-full" onclick="login()">ENTER SYSTEM</button>
+            <p style="text-align: center; margin-top: 20px; color: var(--text-muted); cursor: pointer; font-size: 0.9rem;" onclick="register()">
+                New User? <span style="color: white; text-decoration: underline;">Initialize Access</span>
+            </p>
+        </div>
+    </div>
+
+    <!-- APP CONTAINER -->
+    <div id="app-container" class="hidden">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="brand"><i class="fa-solid fa-atom"></i> NEXUS AI</div>
+            <div class="nav-item active" onclick="nav('dashboard')"><i class="fa-solid fa-chart-pie"></i> Dashboard</div>
+            <div class="nav-item" onclick="nav('profile')"><i class="fa-solid fa-id-card"></i> Profile Data</div>
+            <div class="nav-item" onclick="nav('chat')"><i class="fa-solid fa-comments"></i> Neural Chat</div>
+            <div class="nav-item" onclick="nav('about')"><i class="fa-solid fa-circle-info"></i> About Us</div>
+            <div style="flex-grow: 1;"></div>
+            <div class="nav-item" onclick="logout()"><i class="fa-solid fa-power-off"></i> Disconnect</div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            
+            <!-- DASHBOARD VIEW -->
+            <div id="view-dashboard">
+                <h1><span style="font-weight:200">Welcome Back,</span> <span id="display-name">User</span></h1>
+                <div class="card glass-panel ai-output" id="dashboard-content">
+                    <!-- AI Analysis loads here -->
+                    <div style="text-align: center; padding: 50px;">
+                        <i class="fa-solid fa-circle-notch fa-spin fa-2x"></i>
+                        <p>Retrieving Neural Pathway Analysis...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ONBOARDING FORM (Initially Hidden) -->
+            <div id="view-onboarding" class="hidden">
+                <h1>🚀 Initialize Profile</h1>
+                
+                <!-- Step 1 -->
+                <div class="card glass-panel" id="step1">
+                    <h3>Step 1: Identity Matrix</h3>
+                    <input type="text" id="ob_fullname" placeholder="Full Name">
+                    <select id="ob_edu">
+                        <option value="" disabled selected>Education Level</option>
+                        <option>High School</option>
+                        <option>Undergraduate</option>
+                        <option>Postgraduate</option>
+                        <option>Self-Taught</option>
+                    </select>
+                    <input type="text" id="ob_role" placeholder="Current Role / Status (e.g. Student, Junior Dev)">
+                    <input type="number" id="ob_exp" placeholder="Years of Experience">
+                    <input type="number" id="ob_age" placeholder="Age">
+                    <textarea id="ob_interests" placeholder="What topics excite you? (e.g. AI, Design, Finance)"></textarea>
+                    <textarea id="ob_dream" placeholder="What is your dream career outcome?"></textarea>
+                    <div style="text-align: right;">
+                        <button class="btn" onclick="nextStep(2)">Next Phase <i class="fa-solid fa-arrow-right"></i></button>
+                    </div>
+                </div>
+
+                <!-- Step 2 -->
+                <div class="card glass-panel hidden" id="step2">
+                    <h3>Step 2: Cognitive Assessment</h3>
+                    
+                    <label>How do you prefer to solve problems?</label>
+                    <select id="ob_prob">
+                        <option>Strict Logic / Mathematics</option>
+                        <option>Creative / Emotional approach</option>
+                        <option>Trial and Error</option>
+                    </select>
+
+                    <label>In a team project, you naturally take the role of:</label>
+                    <select id="ob_team">
+                        <option>The Leader/Organizer</option>
+                        <option>The Specialist/Doer</option>
+                        <option>The Mediator/Communicator</option>
+                        <option>The Idea Generator</option>
+                    </select>
+
+                    <label>Which environment helps you thrive?</label>
+                    <select id="ob_env">
+                        <option>Fast-paced & Competitive</option>
+                        <option>Structured & Stable</option>
+                        <option>Quiet & Independent</option>
+                    </select>
+
+                    <label>How do you handle new complex information?</label>
+                    <select id="ob_learn">
+                        <option>I need to visualize it</option>
+                        <option>I need to read/analyze data</option>
+                        <option>I need to discuss it</option>
+                        <option>I need to try it hands-on</option>
+                    </select>
+
+                    <div style="text-align: right; margin-top: 20px;">
+                        <button class="btn" onclick="nextStep(3)">Next Phase <i class="fa-solid fa-arrow-right"></i></button>
+                    </div>
+                </div>
+
+                <!-- Step 3 -->
+                <div class="card glass-panel hidden" id="step3">
+                    <h3>Step 3: Skill Mapping</h3>
+                    <textarea id="ob_hard" placeholder="Hard Skills (e.g. Python, Accounting, Photoshop)"></textarea>
+                    <textarea id="ob_soft" placeholder="Soft Skills (e.g. Leadership, Empathy)"></textarea>
+                    <input type="text" id="ob_miss" placeholder="Is there a specific skill you feel you are missing?">
+                    
+                    <div style="text-align: right;">
+                        <button class="btn" onclick="submitOnboarding()" id="submit-btn">Run Analysis <i class="fa-solid fa-bolt"></i></button>
+                    </div>
+                </div>
+            </div>
+
+            
+            <!-- PROFILE VIEW -->
+             <div id="view-profile" class="hidden">
+                <h1>Stored Data</h1>
+                <div class="card glass-panel" id="profile-details">
+                    <!-- JS fills here -->
+                </div>
+                <!-- EDIT BUTTON -->
+                 <button id="edit-btn" class="btn" style="margin-top:20px;" onclick="enableEdit()">Edit Profile</button>
+            </div>
+
+            <!-- ABOUT VIEW -->
+<div id="view-about" class="hidden">
+    <h1>About CareerNexus</h1>
+
+    <div class="card glass-panel">
+        <h2 style="font-weight:300;margin-bottom:10px;">Our Mission</h2>
+        <p>
+            CareerNexus is designed to guide students, developers, and working professionals 
+            toward meaningful career paths using AI-driven insights. 
+            Our goal is to bridge the gap between <b><i>your current skills</i></b>, 
+            <b><i>aspirations</i></b> , and <b><i>the real-world job landscape</i></b>.
+        </p>
+    </div>
+
+    <div class="card glass-panel">
+        <h2 style="font-weight:300;margin-bottom:10px;">How The AI Works</h2>
+        <p>
+            We use a fully local privacy-safe AI model (<strong>career-guru</strong>) powered by 
+            <strong><i>Ollama</i></strong>. The AI analyzes:
+        </p>
+        <ul>
+            <li>Your skills & education</li>
+            <li>Your learning style & aptitude</li>
+            <li>Your dream goals & interests</li>
+            <li>Industry trends & skill demands</li>
+        </ul>
+        <p>
+            The result is a customized roadmap, career suggestions, and continuous guidance 
+            through the Neural Mentor chat.
+        </p>
+    </div>
+
+    <div class="card glass-panel">
+        <h2 style="font-weight:300;margin-bottom:10px;">Privacy First</h2>
+        <p>
+            Your data stays on your device. Nothing is sent to cloud servers.  
+            All analysis and chat happens using your <strong><i>local offline AI model</i></strong>, 
+            ensuring complete privacy.
+        </p>
+    </div>
+
+    <div class="card glass-panel">
+        <h2 style="font-weight:300;margin-bottom:10px;">The Team Behind Nexus</h2>
+        <p>
+            CareerNexus was built with passion for:
+        </p>
+        <ul>
+            <li>Students seeking clarity</li>
+            <li>Developers wanting specialization guidance</li>
+            <li>Professionals aiming to upskill or switch careers</li>
+        </ul>
+        <p>
+            More enhancements are coming — including interview mentor, resume analyzer, and job fit scoring.
+        </p>
+    </div>
+</div>
+
+
+            <!-- CHAT VIEW -->
+            <div id="view-chat" class="hidden">
+                <div class="chat-container">
+                    <div style="margin-bottom: 10px;">
+                        <h2>Neural Mentor</h2>
+                        <p style="color: var(--text-muted); font-size: 0.9rem;">Powered by Team ISE_37</p>
+                    </div>
+                    
+                    <div class="chat-box" id="chat-box">
+                        <div class="msg ai">
+                            <i class="fa-solid fa-robot" style="margin-right: 10px;"></i>
+                            Hello. I have analyzed your career trajectory. How can I assist you further?
+                        </div>
+                    </div>
+                    
+                    <div class="input-area">
+                        <input type="text" id="chat-input" placeholder="Type your message here..." autocomplete="off">
+                        <button class="send-btn" onclick="sendMessage()">
+                            <i class="fa-solid fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        const API = "http://127.0.0.1:5000";
+        let currentUserId = null;
+
+        // --- ENTER KEY LISTENER (NEW) ---
+        document.addEventListener("DOMContentLoaded", function() {
+            const inputField = document.getElementById("chat-input");
+            inputField.addEventListener("keypress", function(event) {
+                if (event.key === "Enter") {
+                    event.preventDefault();
+                    sendMessage();
+                }
+            });
+        });
+
+        // --- AUTH ---
+        async function login() {
+            const u = document.getElementById('username').value;
+            const p = document.getElementById('password').value;
+            try {
+                const res = await fetch(`${API}/login`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({username: u, password: p})
+                });
+                const data = await res.json();
+                if(data.status === 'success') {
+                    currentUserId = data.user.id;
+                    document.getElementById('display-name').innerText = data.user.username;
+                    document.getElementById('auth-screen').classList.add('hidden');
+                    document.getElementById('app-container').classList.remove('hidden');
+                    
+                    if(data.user.has_onboarded == 0) {
+                        showOnboarding();
+                    } else {
+                        loadDashboard();
+                    }
+                } else {
+                    alert(data.message);
+                }
+            } catch(e) { alert("Connection Error: Is Python server running?"); }
+        }
+
+        async function register() {
+            const u = document.getElementById('username').value;
+            const p = document.getElementById('password').value;
+            const res = await fetch(`${API}/register`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({username: u, password: p})
+            });
+            const data = await res.json();
+            alert(data.message);
+        }
+
+        // --- NAVIGATION ---
+        function nav(view) {
+            document.querySelectorAll('.main-content > div').forEach(d => d.classList.add('hidden'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            
+            // Sidebar active state
+            event.currentTarget.classList.add('active');
+            
+            document.getElementById(`view-${view}`).classList.remove('hidden');
+            if(view === 'dashboard') loadDashboard();
+            if(view === 'profile') loadProfile();
+        }
+
+        function showOnboarding() {
+            document.getElementById('view-dashboard').classList.add('hidden');
+            document.getElementById('view-onboarding').classList.remove('hidden');
+        }
+
+        function nextStep(step) {
+            document.getElementById('step1').classList.add('hidden');
+            document.getElementById('step2').classList.add('hidden');
+            document.getElementById('step3').classList.add('hidden');
+            document.getElementById(`step${step}`).classList.remove('hidden');
+        }
+
+        // --- LOGIC ---
+        async function submitOnboarding() {
+            const btn = document.getElementById('submit-btn');
+            btn.innerHTML = '<div class="loader"></div> Processing...';
+            
+            const data = {
+                user_id: currentUserId,
+                full_name: document.getElementById('ob_fullname').value,
+                education: document.getElementById('ob_edu').value,
+                current_role: document.getElementById('ob_role').value,
+                experience: document.getElementById('ob_exp').value,
+                age: document.getElementById('ob_age').value,
+                interests: document.getElementById('ob_interests').value,
+                dream_goal: document.getElementById('ob_dream').value,
+                prob_solving: document.getElementById('ob_prob').value,
+                team_role: document.getElementById('ob_team').value,
+                environment: document.getElementById('ob_env').value,
+                learning_style: document.getElementById('ob_learn').value,
+                hard_skills: document.getElementById('ob_hard').value,
+                soft_skills: document.getElementById('ob_soft').value,
+                missing_skill: document.getElementById('ob_miss').value
+            };
+
+            await fetch(`${API}/submit_onboarding`, {
+                method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(data)
+            });
+
+            btn.innerHTML = 'Complete';
+            document.getElementById('view-onboarding').classList.add('hidden');
+            document.getElementById('view-dashboard').classList.remove('hidden');
+            loadDashboard();
+        }
+
+        async function loadDashboard() {
+            const res = await fetch(`${API}/get_dashboard`, {
+                method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({user_id: currentUserId})
+            });
+            const data = await res.json();
+            if(data.analysis_result) {
+                document.getElementById('dashboard-content').innerHTML = data.analysis_result;
+            }
+        }
+
+        async function loadProfile() {
+    const res = await fetch(`${API}/get_dashboard`, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({user_id: currentUserId})
+    });
+    
+    const data = await res.json();
+    window.profileCache = data;
+
+    let html = `
+        <p><strong>Name:</strong> ${data.full_name}</p>
+        <p><strong>Age:</strong> ${data.age}</p>
+        <p><strong>Education:</strong> ${data.education}</p>
+        <p><strong>Role:</strong> ${data.current_role}</p>
+        <p><strong>Style:</strong> ${data.prob_solving} / ${data.team_role}</p>
+        <p><strong>Skills:</strong> ${data.hard_skills}</p>
+        <p><strong>Dream:</strong> ${data.dream_goal}</p>
+    `;
+
+    document.getElementById('profile-details').innerHTML = html;
+}
+function enableEdit() {
+    const p = window.profileCache;
+    if (!p) return;
+
+    document.getElementById('profile-details').innerHTML = `
+        <input type="text" id="edit_fullname" value="${p.full_name}">
+        <input type="number" id="edit_age" placeholder="Age" value="${p.age}">
+        <input type="text" id="edit_education" value="${p.education}">
+        <input type="text" id="edit_role" value="${p.current_role}">
+        <textarea id="edit_skills">${p.hard_skills}</textarea>
+        <textarea id="edit_dream">${p.dream_goal}</textarea>
+    `;
+
+    const btn = document.getElementById('edit-btn');
+    btn.innerHTML = "Save Changes";
+    btn.onclick = saveProfileChanges;
+}
+
+async function saveProfileChanges() {
+    const payload = {
+        user_id: currentUserId,
+        full_name: document.getElementById('edit_fullname').value,
+        age: document.getElementById('edit_age').value,
+        education: document.getElementById('edit_education').value,
+        current_role: document.getElementById('edit_role').value,
+        hard_skills: document.getElementById('edit_skills').value,
+        dream_goal: document.getElementById('edit_dream').value
+    };
+
+    const res = await fetch(`${API}/update_profile`, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(payload)
+    });
+
+    const data = await res.json();
+    if (data.status === "success") {
+        alert("Profile Updated Successfully!");
+        loadProfile();
+
+        const btn = document.getElementById('edit-btn');
+        btn.innerHTML = "Edit Profile";
+        btn.onclick = enableEdit;
+    } else {
+        alert("Error updating profile: " + data.message);
+    }
+}
+function formatAIResponse(text) {
+        text = text.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
+        text = text.replace(/### (.*)/g, `<h3>$1</h3>`);
+        text = text.replace(/## (.*)/g, `<h2>$1</h2>`);
+        text = text.replace(/(?:\-|\*) (.*)/g, `<li>$1</li>`);
+        text = text.replace(/(<li>[\s\S]*?<\/li>)/g, "<ul>$1</ul>");
+        text = text.replace(/\n{2,}/g, "</p><p>");
+        text = "<p>" + text + "</p>";
+        return text;
+    }
+
+        // --- CHAT ---
+        async function sendMessage() {
+            const inp = document.getElementById('chat-input');
+            const txt = inp.value;
+            if(!txt) return;
+            
+            const box = document.getElementById('chat-box');
+            // Append User Message
+            box.innerHTML += `<div class="msg user">${txt}</div>`;
+            inp.value = "";
+            box.scrollTop = box.scrollHeight;
+
+            // Add loading indicator
+            const loadingId = "load-" + Date.now();
+            box.innerHTML += `<div class="msg ai" id="${loadingId}"><i class="fa-solid fa-circle-notch fa-spin"></i> Thinking...</div>`;
+            box.scrollTop = box.scrollHeight;
+
+            try {
+                const res = await fetch(`${API}/chat`, {
+                    method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({message: txt,user_id: currentUserId })
+
+                });
+                const data = await res.json();
+                
+                // Remove loader and add response
+                document.getElementById(loadingId).remove();
+                box.innerHTML += `
+    <div class="msg ai glass-response">
+        <div class="ai-icon"><i class="fa-solid fa-robot"></i></div>
+        <div class="ai-text">${formatAIResponse(data.reply)}</div>
+    </div>
+`;
+
+                box.scrollTop = box.scrollHeight;
+            } catch (e) {
+                document.getElementById(loadingId).innerText = "Error: AI Offline";
+            }
+        }
+
+        function logout() { location.reload(); }
+    </script>
+</body>
+</html>
