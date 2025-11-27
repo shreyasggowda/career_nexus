@@ -1,6 +1,6 @@
 ***
 
-# 🚀 CareerNexus AI
+# CareerNexus AI
 ### AI-Enhanced Career Guidance System for Personalized Career Pathways
 
 **CareerNexus AI** is a privacy-first, AI-powered platform designed to provide personalized career roadmaps. By analyzing an individual's **Aptitude, Aspirations, Abilities, and Experience**, the system utilizes a local LLM (Ollama) to bridge the gap between current skills and future career goals.
@@ -11,7 +11,7 @@
 
 ---
 
-## 📖 Table of Contents
+## Table of Contents
 - [Problem Statement](#-problem-statement)
 - [Key Features](#-key-features)
 - [Tech Stack](#-tech-stack)
@@ -24,7 +24,7 @@
 
 ---
 
-## 🎯 Problem Statement
+## Problem Statement
 Many students and professionals struggle to find career paths that align with their unique profiles. Traditional counseling is often generic and expensive. **CareerNexus** solves this by leveraging data to provide:
 1.  **Aptitude Assessment:** Identifying natural strengths.
 2.  **Aspirations Mapping:** Aligning suggestions with long-term dreams.
@@ -43,7 +43,7 @@ Many students and professionals struggle to find career paths that align with th
 
 ---
 
-## 🛠 Tech Stack
+## Tech Stack
 *   **Frontend:** HTML5, CSS3 (Animations & Glassmorphism), JavaScript (Fetch API).
 *   **Backend:** Python (Flask), Flask-CORS.
 *   **Database:** MySQL.
@@ -51,7 +51,7 @@ Many students and professionals struggle to find career paths that align with th
 
 ---
 
-## 📋 Prerequisites
+## Prerequisites
 Before running the project, ensure you have the following installed:
 1.  **Python 3.x**
 2.  **MySQL Server** (via XAMPP, WAMP, or standalone MySQL Workbench).
@@ -59,7 +59,7 @@ Before running the project, ensure you have the following installed:
 
 ---
 
-## ⚙️ Installation & Setup
+## Installation & Setup
 
 ### 1. Clone the Repository
 ```bash
@@ -74,7 +74,7 @@ pip install flask flask-cors mysql-connector-python ollama
 
 ---
 
-## 🗄 Database Configuration
+## Database Configuration
 
 1.  Open your MySQL Client (e.g., phpMyAdmin or Workbench).
 2.  Create a database named `career_nexus`.
@@ -114,7 +114,7 @@ CREATE TABLE IF NOT EXISTS profiles (
 );
 ```
 
-## 🧠 AI Model Setup (Ollama)
+## AI Model Setup (Ollama)
 
 This project uses a custom system prompt on top of Llama 3.
 
@@ -155,7 +155,7 @@ This project uses a custom system prompt on top of Llama 3.
 
 ---
 
-## 📂 Project Structure
+## Project Structure
 
 ```text
 careernexus/
