@@ -13,12 +13,12 @@ CORS(app)
 # --- CONFIG ---
 DB_CONFIG = {
     'host': 'localhost',
-    'user': 'root',      # Your MySQL Username
-    'password': '57dvruksha',      # Your MySQL Password
+    'user': 'root',      #  MySQL Username
+    'password': '57dvruksha',      #  MySQL Password
     'database': 'career_nexus'
 }
 
-MODEL_NAME = "career-guru" # Ensure you created this using 'ollama create'
+MODEL_NAME = "career-guru" #  created this using 'ollama create'
 
 def get_db():
     return mysql.connector.connect(**DB_CONFIG)
@@ -194,9 +194,17 @@ def chat():
     # BUILD MESSAGE STACK FOR OLLAMA
     # ---------------------------------
     messages = [
-        {"role": "system", "content": "You are a personalized AI career mentor who remembers previous messages."},
-        {"role": "assistant", "content": f"Here is the user's profile for reference:\n{profile_context}"}
-    ]
+    {
+        "role": "system",
+        "content":
+        "You are CareerNexus AI, a strict career-focused assistant. You ONLY answer questions related to careers, jobs, internships, skills, education pathways, resumes, placements, and professional development. For any question outside these topics, politely refuse and redirect the user back to career-related guidance. You remember previous messages for context."
+    },
+    {
+        "role": "assistant",
+        "content": f"Here is the user's profile for reference:\n{profile_context}"
+    }
+]
+
 
     # Add conversation history
     messages.extend(chat_memory[uid])
